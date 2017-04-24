@@ -13,7 +13,10 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    dd(1);
+Route::/*middleware('auth:api')->*/get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::middleware('auth.basic')->resource('projects', 'ProjectController', ['only' => [
+    'index', 'show'
+]]);
