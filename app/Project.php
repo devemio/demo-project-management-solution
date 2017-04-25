@@ -11,4 +11,9 @@ class Project extends Model
         'deleted_at',
         'updated_at',
     ];
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
+    }
 }

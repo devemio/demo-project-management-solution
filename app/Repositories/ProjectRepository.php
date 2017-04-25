@@ -16,8 +16,13 @@ class ProjectRepository
         $this->request = $request;
     }
 
+    private function getUserID(): int
+    {
+        return $this->request->user()->getID();
+    }
+
     public function all()
     {
-        return $this->project->where('user_id', $this->request->user()->id)->get();
+        return $this->project->where('user_id', $this->getUserID())->get();
     }
 }

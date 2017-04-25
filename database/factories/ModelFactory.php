@@ -16,10 +16,11 @@ use App\Utils\Statuses;
 
 $factory->define(App\User::class, function (Faker\Generator $faker) {
     static $password;
+    static $number = 1;
 
     return [
         'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
+        'email' => 'test' . $number++ . '@example.dev', // $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),
         'remember_token' => str_random(10),
         'birth_date' => $faker->dateTimeThisCentury,
@@ -28,12 +29,25 @@ $factory->define(App\User::class, function (Faker\Generator $faker) {
 });
 
 $factory->define(App\Project::class, function (Faker\Generator $faker) {
-    static $projectId;
+    static $projectID = 1;
 
     return [
-        'name' => 'Project #' . ++$projectId,
-        'description' => 'Description',
+        'user_id' => App\User::inRandomOrder()->get()->first()->getID(),
+        'name' => 'Project #' . $projectID++,
+        'description' => 'Project description',
         'status' => Statuses::TO_DO,
-        'deadline' => date('Y-m-d'),
+        'deadline' => $faker->dateTimeThisYear,
+    ];
+});
+
+$factory->define(App\Task::class, function (Faker\Generator $faker) {
+    static $taskID = 1;
+
+    return [
+        'user_id' => App\User::inRandomOrder()->get()->first()->getID(),
+        'name' => 'Task #' . $taskID++,
+        'description' => 'Task description',
+        'status' => Statuses::TO_DO,
+        'deadline' => $faker->dateTimeThisYear,
     ];
 });
