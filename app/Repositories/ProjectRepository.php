@@ -5,20 +5,14 @@ namespace App\Repositories;
 use App\Project;
 use Illuminate\Http\Request;
 
-class ProjectRepository
+class ProjectRepository extends BaseRepository
 {
     private $project;
-    private $request;
 
     public function __construct(Request $request, Project $project)
     {
+        parent::__construct($request);
         $this->project = $project;
-        $this->request = $request;
-    }
-
-    private function getUserID(): int
-    {
-        return $this->request->user()->getID();
     }
 
     public function all()

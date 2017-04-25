@@ -2,91 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreProjectRequest;
+use App\Project;
 use App\Repositories\ProjectRepository;
 use Illuminate\Http\Request;
 
 class ProjectController extends Controller
 {
     protected $projectRepository;
+    protected $project;
 
-    public function __construct(ProjectRepository $projectRepository)
+    public function __construct(ProjectRepository $projectRepository, Project $project)
     {
         $this->projectRepository = $projectRepository;
+        $this->project = $project;
     }
 
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
         return $this->projectRepository->all();
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(StoreProjectRequest $request)
     {
-        //
+        $project = new Project($request->all());
+        $request->user()->projects()->save($project);
+        return $project;
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+    public function show(Project $project)
     {
-        //
+        return $project;
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
+    public function update(Request $request, Project $project)
     {
-        //
+        $this->authorize('update', $project);
+        $project->fill($request->all());
+        $project->save();
+        return $project;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function destroy(Project $project)
     {
-        //
+        $project->delete();
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request $request
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
+    public function restoreProject(int $projectID)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-        //
+        $this->project->onlyTrashed()->where('id', $projectID)->restore();
     }
 }

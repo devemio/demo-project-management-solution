@@ -5,6 +5,9 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * @property int id
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -18,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'birth_date',
+        'avatar',
     ];
 
     /**
@@ -33,6 +38,11 @@ class User extends Authenticatable
     public function projects()
     {
         return $this->hasMany(Project::class);
+    }
+
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
     }
 
     public function getID()

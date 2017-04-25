@@ -13,10 +13,17 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::/*middleware('auth:api')->*/get('/user', function (Request $request) {
+Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::middleware('auth.basic')->resource('projects', 'ProjectController', ['only' => [
-    'index', 'show'
-]]);
+Route::group(['middleware' => 'auth.basic'], function () {
+    Route::get('tasks/assigned', 'TaskController@getAssignedTasks');
+    Route::post('tasks/{task}/assign', 'TaskController@assignTask');
+    Route::resource('tasks', 'TaskController');
+
+    Route::post('projects/{project}/restore', 'ProjectController@restoreProject');
+    Route::resource('projects', 'ProjectController');
+
+    Route::put('users/{user}', 'UserController@update')->middleware('can:update-user,user');
+});
