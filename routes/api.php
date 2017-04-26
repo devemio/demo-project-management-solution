@@ -17,6 +17,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/', 'ApiController@getDescription');
+
 Route::group(['middleware' => 'auth.basic'], function () {
     Route::get('tasks/assigned', 'TaskController@getAssignedTasks');
     Route::post('tasks/{task}/assign', 'TaskController@assignTask');
