@@ -38,7 +38,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <form class="navbar-form navbar-right">
                 <div class="form-group">
-                    <input type="text" id="api-url" class="form-control " value="{{ env('API_URL', url('/api')) }}" disabled>
+                    <input type="text" id="api-url" class="form-control " value="{{ url('/api') }}" disabled>
                 </div>
             </form>
         </div><!--/.navbar-collapse -->
