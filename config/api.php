@@ -7,7 +7,7 @@ use App\Utils\Api\Types;
 return [
 
     'users' => [
-        new Method('PUT', 'users/{user}', [
+        new Method('PUT', 'users/{id}', [
             new Param('name'),
             new Param('birth_date'),
             new Param('avatar')
@@ -26,7 +26,7 @@ return [
         ]),
         new Method('POST', 'projects/{id}/restore'),
 
-        new Method('PUT', 'projects', [
+        new Method('PUT', 'projects/{id}', [
             new Param('name'),
             new Param('description'),
             new Param('status'),
@@ -49,12 +49,12 @@ return [
             new Param('status', Types::STRING, true),
             new Param('deadline', Types::DATE, true),
         ]),
-        new Method('POST', 'tasks/{task}/assign', [
+        new Method('POST', 'tasks/{id}/assign', [
             new Param('assigned_to', Types::INTEGER, true),
             new Param('comment'),
         ]),
 
-        new Method('PUT', 'tasks', [
+        new Method('PUT', 'tasks/{id}', [
             new Param('name'),
             new Param('description'),
             new Param('status'),
