@@ -15,13 +15,13 @@ class CreateReassignmentsTable extends Migration
     {
         Schema::create('reassignments', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('owner_user_id')->unsigned();
-            $table->integer('assigned_to_user_id')->unsigned();
+            $table->integer('task_id')->unsigned();
+            $table->integer('assigned_to')->unsigned();
             $table->string('comment')->nullable();
             $table->timestamps();
 
-            $table->foreign('owner_user_id')->references('id')->on('users');
-            $table->foreign('assigned_to_user_id')->references('id')->on('users');
+            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('assigned_to')->references('id')->on('users');
         });
     }
 

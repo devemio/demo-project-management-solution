@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Reassignment;
 use App\Repositories\TaskRepository;
 use App\Task;
+use App\Utils\Events;
 use App\Utils\Statuses;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class TaskController extends Controller
@@ -29,13 +32,26 @@ class TaskController extends Controller
 
     public function assignTask(Request $request, Task $task)
     {
+        $this->authorize('assign', $task);
+
         $this->validate($request, [
             'assigned_to' => 'required|exists:users,id',
         ]);
-        $task->assigned_to = $request->input('assgined_to');
-        $task->save();
 
-        // @TODO use transaction and add comment
+        if ($task->assigned_to == $request->input('assigned_to')) {
+            return $task;
+        }
+
+        DB::transaction(function () use ($request, $task) {
+            $task->assigned_to = $request->input('assigned_to');
+            $task->save();
+
+            $reassignment = new Reassignment();
+            $reassignment->task_id = $task->id;
+            $reassignment->assigned_to = $task->assigned_to;
+            $reassignment->comment = $request->input('comment');
+            $reassignment->save();
+        });
 
         return $task;
     }
@@ -50,10 +66,14 @@ class TaskController extends Controller
             'status' => ['required', Rule::in(Statuses::all())],
             'deadline' => 'required|date',
         ]);
+
         $task = new Task($request->all());
         $task->project_id = $request->input('project_id');
         $task->assigned_to = $request->input('assigned_to');
         $request->user()->tasks()->save($task);
+
+        event(Events::TASK_CREATED, $task);
+
         return $task;
     }
 

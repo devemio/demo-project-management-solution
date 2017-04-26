@@ -45,6 +45,7 @@ $factory->define(App\Task::class, function (Faker\Generator $faker) {
 
     return [
         'user_id' => App\User::inRandomOrder()->get()->first()->getID(),
+        'assigned_to' => App\User::inRandomOrder()->get()->first()->getID(),
         'name' => 'Task #' . $taskID++,
         'description' => 'Task description',
         'status' => Statuses::TO_DO,

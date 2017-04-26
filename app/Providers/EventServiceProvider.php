@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Event;
+use App\Reassignment;
+use App\Task;
+use App\Utils\Events;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -27,6 +30,11 @@ class EventServiceProvider extends ServiceProvider
     {
         parent::boot();
 
-        //
+        Event::listen(Events::TASK_CREATED, function (Task $task) {
+            $reassignment = new Reassignment();
+            $reassignment->task_id = $task->id;
+            $reassignment->assigned_to = $task->assigned_to;
+            $reassignment->save();
+        });
     }
 }

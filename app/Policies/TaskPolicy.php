@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Project;
 use App\User;
 use App\Task;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -20,5 +21,10 @@ class TaskPolicy
     public function update(User $user, Task $task)
     {
         return $user->getID() == $task->user_id;
+    }
+
+    public function assign(User $user, Task $task)
+    {
+        return $user->getID() == $task->project->user_id;
     }
 }
