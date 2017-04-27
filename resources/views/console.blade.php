@@ -64,7 +64,7 @@
 
                     </table>
                     </form>
-                    <p><a class="btn btn-primary hidden" href="#" role="button" id="SendRequestBtn">Send request</a></p>
+                    <p><a class="btn btn-primary btn-block hidden" href="#" role="button" id="SendRequestBtn">Send request</a></p>
                 </div>
             </div>
         </div>

@@ -1,66 +1,121 @@
-let API_URL = $('#api-url').val() + '/';
+"use strict";
 
-$.get(API_URL)
-    .done(function(data) {
-        console.log(data);
+class MethodClassMapper {
+    constructor() {
+        this.map = {
+            GET: 'success',
+            POST: 'warning',
+            PUT: 'warning',
+            DELETE: 'danger',
+        };
+    }
 
-        let $apiMethods = $('#ApiMethods');
-        let $consoleInput = $('#ConsoleInput table');
-        let $sendRequestBtn = $('#SendRequestBtn')
-        let $consoleOutput = $('#ConsoleOutput');
-        let $errorConsoleOutputContainer = $('#ErrorConsoleOutputContainer');
-        let $errorConsoleOutput = $('#ErrorConsoleOutput');
-        let $inputs = $('#inputs');
+    get(method) {
+        return this.map[method];
+    }
+}
 
-        $.each(data, function(resource, methods) {
-            $apiMethods.append('<a href="#" class="list-group-item disabled">' + resource.toUpperCase() + ' </a>');
-            $.each(methods, function(key, method) {
-                let item = $('<a href="#" class="list-group-item clickable"><span class="badge">' + method.method + '</span>' + method.url + '</a>');
-                item.data(method);
-                $apiMethods.append(item);
-            });
-        });
+class ConsoleOutput {
+    constructor() {
+        this.$consoleOutput = $('#ConsoleOutput');
+        this.$errorConsoleOutputContainer = $('#ErrorConsoleOutputContainer');
+        this.$errorConsoleOutput = $('#ErrorConsoleOutput');
+        this.clear();
+    }
 
-        $apiMethods.find('.clickable').click(function() {
-            let method = $(this).data();
-            $sendRequestBtn.removeClass('hidden');
+    clear() {
+        this.$consoleOutput.html('');
+        this.$errorConsoleOutputContainer.addClass('hidden');
+    }
 
-            $consoleInput.html('');
+    render(response) {
+        response = response === '' ? 'OK' : JSON.stringify(response, null, '\t');
+        this.$consoleOutput.html(response);
+    }
 
-            if (method.url.includes('{id}')) {
-                let item = $('<tr><td><kbd>*</kbd> Resource ID</td><td><input type="text" id="ResourceID" class="form-control input-sm"></td></tr>');
-                $consoleInput.append(item);
-            }
+    error(jqXHR) {
+        this.$errorConsoleOutputContainer.removeClass('hidden');
+        this.$errorConsoleOutput.text('Request failed: ' + jqXHR.status + ' ' + jqXHR.statusText);
+    }
+}
 
-            $.each(method.params, function(key, param) {
-                let item = $('<tr><td>' + (param.required ? '<kbd>*</kbd> ' : '') + param.name + '</td><td><input type="text" name="' + param.name + '" class="form-control input-sm"></td></tr>');
-                $consoleInput.append(item);
-            });
-            $sendRequestBtn.data(method);
-        });
+class Application {
+    constructor(consoleOutput, methodClassMapper) {
+        this.apiUrl = $('#api-url').val() + '/';
+        this.consoleOutput = consoleOutput;
+        this.methodClassMapper = methodClassMapper;
+        this.$apiMethods = $('#ApiMethods');
+        this.$consoleInput = $('#ConsoleInput table');
+        this.$sendRequestBtn = $('#SendRequestBtn');
+        this.$inputs = $('#inputs');
+        this.renderApiMethods();
+    }
 
-        $sendRequestBtn.click(function() {
-            let method = $(this).data();
-
-            $consoleOutput.html('');
-            $errorConsoleOutputContainer.addClass('hidden');
-            console.log(method);
-
-            let url = method.url.includes('{id}') ? method.url.replace('{id}', $inputs.find('#ResourceID').val()) : method.url;
-
-            $.ajax({
-                method: method.method,
-                url: API_URL + url || method.url,
-                data: $inputs.find(':input').filter(function(index, element) {
-                    return $(element).val() !== '';
-                }).serialize()
-            })
-                .done(function(data) {
-                    $consoleOutput.html(JSON.stringify(data, null, '\t'));
-                })
-                .fail(function(jqXHR) {
-                    $errorConsoleOutputContainer.removeClass('hidden');
-                    $errorConsoleOutput.text('Request failed: ' + jqXHR.status + ' ' + jqXHR.statusText);
+    renderApiMethods() {
+        let app = this;
+        $.get(app.getApiUrl())
+            .done((data) => {
+                $.each(data, function(resource, methods) {
+                    app.$apiMethods.append('<a href="#" class="list-group-item disabled">' + resource.toUpperCase() + ' </a>');
+                    $.each(methods, function(key, method) {
+                        let item = $('<a href="#" class="list-group-item clickable"><span class="badge badge-' + app.methodClassMapper.get(method.method) + '">' + method.method + '</span>' + method.url + '</a>');
+                        item.data(method).click(function() {
+                            app.clickOnMethodHandler($(this).data())
+                        });
+                        app.$apiMethods.append(item);
+                    });
                 });
+                app.$sendRequestBtn.click(function() {
+                    app.sendRequestHandler($(this).data())
+                });
+            });
+    }
+
+    clickOnMethodHandler(method) {
+        let app = this;
+        app.$sendRequestBtn.removeClass('hidden');
+        app.$consoleInput.html('');
+
+        if (method.url.includes('{id}')) {
+            let item = $('<tr class="info"><td><kbd>*</kbd> Resource ID</td><td><input type="text" id="ResourceID" class="form-control input-sm"></td></tr>');
+            app.$consoleInput.append(item);
+        }
+
+        $.each(method.params, function(key, param) {
+            let item = $('<tr><td>' + (param.required ? '<kbd>*</kbd> ' : '') + param.name + '</td><td><input type="text" name="' + param.name + '" class="form-control input-sm"></td></tr>');
+            app.$consoleInput.append(item);
         });
-    });
+        app.$sendRequestBtn.data(method);
+    }
+
+    sendRequestHandler(method) {
+        let app = this;
+        app.consoleOutput.clear();
+
+        let url = method.url;
+        if (method.url.includes('{id}')) {
+            let resourceID = app.$inputs.find('#ResourceID').val();
+            if (!resourceID) {
+                alert('Resource ID is empty');
+                return false;
+            }
+            url = method.url.replace('{id}', resourceID);
+        }
+
+        $.ajax({
+            method: method.method,
+            url: app.getApiUrl() + url,
+            data: app.$inputs.find(':input').filter(function(index, element) {
+                return $(element).val() !== '';
+            }).serialize()
+        })
+            .done((data) => app.consoleOutput.render(data))
+            .fail((jqXHR) => app.consoleOutput.error(jqXHR));
+    }
+
+    getApiUrl() {
+        return this.apiUrl;
+    }
+}
+
+new Application(new ConsoleOutput(), new MethodClassMapper());
