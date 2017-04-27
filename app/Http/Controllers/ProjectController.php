@@ -50,6 +50,6 @@ class ProjectController extends Controller
 
     public function restoreProject(int $projectID)
     {
-        $this->project->onlyTrashed()->where('id', $projectID)->restore();
+        $this->project->withTrashed()->findOrFail($projectID)->restore();
     }
 }
