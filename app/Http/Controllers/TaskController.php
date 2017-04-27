@@ -64,7 +64,7 @@ class TaskController extends Controller
             'name' => 'required|max:255',
             'description' => 'required',
             'status' => ['required', Rule::in(Statuses::all())],
-            'deadline' => 'required|date',
+            'deadline' => 'required|date_format:Y-m-d',
         ]);
 
         $task = new Task($request->all());
@@ -85,6 +85,14 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $this->authorize('update', $task);
+
+        $this->validate($request, [
+            'name' => 'filled|max:255',
+            'description' => 'filled',
+            'status' => [Rule::in(Statuses::all())],
+            'deadline' => 'date_format:Y-m-d',
+        ]);
+
         $task->fill($request->all());
         $task->save();
         return $task;

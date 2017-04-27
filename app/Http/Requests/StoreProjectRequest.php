@@ -29,7 +29,7 @@ class StoreProjectRequest extends FormRequest
             'name' => 'required|max:255',
             'description' => 'required',
             'status' => ['required', Rule::in(Statuses::all())],
-            'deadline' => 'required|date',
+            'deadline' => 'required|date_format:Y-m-d',
         ];
     }
 }

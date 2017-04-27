@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProjectRequest;
 use App\Project;
 use App\Repositories\ProjectRepository;
+use App\Utils\Statuses;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -38,6 +40,14 @@ class ProjectController extends Controller
     public function update(Request $request, Project $project)
     {
         $this->authorize('update', $project);
+
+        $this->validate($request, [
+            'name' => 'filled|max:255',
+            'description' => 'filled',
+            'status' => [Rule::in(Statuses::all())],
+            'deadline' => 'date_format:Y-m-d',
+        ]);
+
         $project->fill($request->all());
         $project->save();
         return $project;
