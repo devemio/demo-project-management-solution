@@ -20,11 +20,10 @@ class ConsoleOutput {
         this.$consoleOutput = $('#ConsoleOutput');
         this.$errorConsoleOutputContainer = $('#ErrorConsoleOutputContainer');
         this.$errorConsoleOutput = $('#ErrorConsoleOutput');
-        this.clear();
     }
 
-    clear() {
-        this.$consoleOutput.html('');
+    loading() {
+        this.$consoleOutput.html('Loading...');
         this.$errorConsoleOutputContainer.addClass('hidden');
     }
 
@@ -34,6 +33,7 @@ class ConsoleOutput {
     }
 
     error(jqXHR) {
+        this.$consoleOutput.html('');
         this.$errorConsoleOutputContainer.removeClass('hidden');
         this.$errorConsoleOutput.text('Request failed: ' + jqXHR.status + ' ' + jqXHR.statusText);
     }
@@ -90,7 +90,6 @@ class Application {
 
     sendRequestHandler(method) {
         let app = this;
-        app.consoleOutput.clear();
 
         let url = method.url;
         if (method.url.includes('{id}')) {
@@ -107,7 +106,10 @@ class Application {
             url: app.getApiUrl() + url,
             data: app.$inputs.find(':input').filter(function(index, element) {
                 return $(element).val() !== '';
-            }).serialize()
+            }).serialize(),
+            beforeSend: function() {
+                app.consoleOutput.loading();
+            },
         })
             .done((data) => app.consoleOutput.render(data))
             .fail((jqXHR) => app.consoleOutput.error(jqXHR));
