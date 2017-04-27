@@ -4,7 +4,7 @@ namespace App\Utils\Api;
 
 class Types
 {
-    const INTEGER = 'int';
-    const STRING = 'string';
+    const NUMBER = 'number';
+    const TEXT = 'text';
     const DATE = 'date';
 }

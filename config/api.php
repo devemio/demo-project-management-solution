@@ -19,9 +19,9 @@ return [
         new Method('GET', 'projects/{id}'),
 
         new Method('POST', 'projects', [
-            new Param('name', Types::STRING, true),
-            new Param('description', Types::STRING, true),
-            new Param('status', Types::STRING, true),
+            new Param('name', Types::TEXT, true),
+            new Param('description', Types::TEXT, true),
+            new Param('status', Types::TEXT, true),
             new Param('deadline', Types::DATE, true),
         ]),
         new Method('POST', 'projects/{id}/restore'),
@@ -42,15 +42,15 @@ return [
         new Method('GET', 'tasks/{id}'),
 
         new Method('POST', 'tasks', [
-            new Param('project_id', Types::INTEGER, true),
-            new Param('assigned_to', Types::INTEGER, true),
-            new Param('name', Types::STRING, true),
-            new Param('description', Types::STRING, true),
-            new Param('status', Types::STRING, true),
+            new Param('project_id', Types::NUMBER, true),
+            new Param('assigned_to', Types::NUMBER, true),
+            new Param('name', Types::TEXT, true),
+            new Param('description', Types::TEXT, true),
+            new Param('status', Types::TEXT, true),
             new Param('deadline', Types::DATE, true),
         ]),
         new Method('POST', 'tasks/{id}/assign', [
-            new Param('assigned_to', Types::INTEGER, true),
+            new Param('assigned_to', Types::NUMBER, true),
             new Param('comment'),
         ]),
 

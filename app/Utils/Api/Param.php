@@ -10,7 +10,7 @@ class Param implements JsonSerializable
     private $type;
     private $required = false;
 
-    public function __construct($name, $type = Types::STRING, $required = false)
+    public function __construct($name, $type = Types::TEXT, $required = false)
     {
         $this->name = $name;
         $this->type = $type;

@@ -82,7 +82,7 @@ class Application {
         }
 
         $.each(method.params, function(key, param) {
-            let item = $('<tr><td>' + (param.required ? '<kbd>*</kbd> ' : '') + param.name + '</td><td><input type="text" name="' + param.name + '" class="form-control input-sm"></td></tr>');
+            let item = $('<tr><td>' + (param.required ? '<kbd>*</kbd> ' : '') + param.name + '</td><td><input type="' + param.type + '" name="' + param.name + '" class="form-control input-sm"></td></tr>');
             app.$consoleInput.append(item);
         });
         app.$sendRequestBtn.data(method);
