@@ -38,7 +38,7 @@
         <div id="navbar" class="navbar-collapse collapse">
             <form class="navbar-form navbar-right">
                 <div class="form-group">
-                    <input type="text" id="api-url" class="form-control " value="{{ url('/api') }}" disabled>
+                    <input type="text" id="api-url" class="form-control" value="http://project-management-solution.dev/api" disabled>
                 </div>
             </form>
         </div><!--/.navbar-collapse -->
@@ -49,9 +49,21 @@
     <!-- Example row of columns -->
     <div class="row">
         <div class="col-md-4">
-            <div class="list-group" id="ApiMethods">
 
+            <div v-for="(methods, resource) in api" class="list-group">
+                <li class="list-group-item disabled">{{ resource }}</li>
+                <a v-for="method in methods" href="#" class="list-group-item clickable"><span class="badge badge-success">{{ method.method }}</span>{{ method.url }}</a>
             </div>
+
+            <!--
+            <div class="list-group" id="ApiMethods">
+                <span v-for="(methods, resource) in api">
+                    <a class="list-group-item disabled">{{ resource }}</a>
+                    <a v-for="method in methods" href="#" class="list-group-item clickable"><span class="badge badge-success">{{ method.method }}</span>{{ method.url }}</a>
+                </span>
+            </div>
+
+            -->
         </div>
         <div class="col-md-4">
             <div class="panel panel-default" id="ConsoleInput">

@@ -1,4 +1,70 @@
-"use strict";
+// "use strict";
+
+new Vue({
+    el: '#console-container',
+    data: {
+        name: 'someName',
+        api: {
+            users: [
+                {
+                    method: "PUT",
+                    url: "users/{id}",
+                    params: [
+                        {
+                            name: "name",
+                            type: "text",
+                            required: false
+                        },
+                        {
+                            name: "birth_date",
+                            type: "text",
+                            required: false
+                        },
+                        {
+                            name: "avatar",
+                            type: "text",
+                            required: false
+                        }
+                    ]
+                },
+                {
+                    method: "GET",
+                    url: "users",
+                    params: []
+                }
+            ],
+            projects: [
+                {
+                    method: "PUT",
+                    url: "users/{id}",
+                    params: [
+                        {
+                            name: "name",
+                            type: "text",
+                            required: false
+                        },
+                        {
+                            name: "birth_date",
+                            type: "text",
+                            required: false
+                        },
+                        {
+                            name: "avatar",
+                            type: "text",
+                            required: false
+                        }
+                    ]
+                },
+                {
+                    method: "GET",
+                    url: "users",
+                    params: []
+                }
+            ]
+        }
+    }
+});
+
 
 class MethodClassMapper {
     constructor() {
@@ -55,17 +121,17 @@ class Application {
         let app = this;
         $.get(app.getApiUrl())
             .done((data) => {
-                $.each(data, function(resource, methods) {
+                $.each(data, function (resource, methods) {
                     app.$apiMethods.append('<a href="#" class="list-group-item disabled">' + resource.toUpperCase() + ' </a>');
-                    $.each(methods, function(key, method) {
+                    $.each(methods, function (key, method) {
                         let item = $('<a href="#" class="list-group-item clickable"><span class="badge badge-' + app.methodClassMapper.get(method.method) + '">' + method.method + '</span>' + method.url + '</a>');
-                        item.data(method).click(function() {
+                        item.data(method).click(function () {
                             app.clickOnMethodHandler($(this).data())
                         });
                         app.$apiMethods.append(item);
                     });
                 });
-                app.$sendRequestBtn.click(function() {
+                app.$sendRequestBtn.click(function () {
                     app.sendRequestHandler($(this).data())
                 });
             });
@@ -81,7 +147,7 @@ class Application {
             app.$consoleInput.append(item);
         }
 
-        $.each(method.params, function(key, param) {
+        $.each(method.params, function (key, param) {
             let item = $('<tr><td>' + (param.required ? '<kbd>*</kbd> ' : '') + param.name + '</td><td><input type="' + param.type + '" name="' + param.name + '" class="form-control input-sm"></td></tr>');
             app.$consoleInput.append(item);
         });
@@ -104,10 +170,10 @@ class Application {
         $.ajax({
             method: method.method,
             url: app.getApiUrl() + url,
-            data: app.$inputs.find(':input').filter(function(index, element) {
+            data: app.$inputs.find(':input').filter(function (index, element) {
                 return $(element).val() !== '';
             }).serialize(),
-            beforeSend: function() {
+            beforeSend: function () {
                 app.consoleOutput.loading();
             },
         })
